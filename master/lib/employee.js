@@ -3,6 +3,7 @@ class Employee {
         this.name = name;
         this.id = id;
         this.email = email;
+        this.role = role;
     }
 
     getName() {
@@ -23,7 +24,7 @@ class Employee {
 
     getRole() {
         // console.log(`Title: ${this.title}`);
-        return "Manager"
+        return this.role
     }
 }
 

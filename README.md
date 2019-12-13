@@ -3,6 +3,8 @@ Homework #10
 
 Welcome to the Team Profile Generator. 
 
+https://dsorthep.github.io/team-generator/
+
 Here you will be able to create your own Team Page with employee data retrieved from a CLI. 
 
 "As a manager

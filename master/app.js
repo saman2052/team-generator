@@ -10,22 +10,49 @@ const Jest = require("jest");
 const path = require("path");
 const fs = require("fs");
 
-let employeeArr = [];
+let employeeInfo = [];
 let managerArr = [];
 let engineerArr = [];
 let internArr = [];
 
-const initApp = [
+const userChoices = [
     {
         type: "list",
         message: "Would you like to: ",
-        name: "user",
+        name: "userChoices",
         choices: [
             "Add an employee?",
             "Create a Team HTML page?"
         ]
     }
 ] 
+
+const userQuestions = [
+    {
+        type:"input",
+        message: "Welcome, what's your name?",
+        name: "name"
+    },
+    {
+        type: "input",
+        message: "What's your ID?",
+        name: "id"
+    },
+    {
+        type: "input",
+        message: "What's your email?",
+        name: "email"
+    },
+    {
+        type: "confirm",
+        message: "Are you a manager?",
+        name: "position",
+        choices: [
+            "Yes",
+            "No"
+        ]
+    }
+];
 
 const questions = [
     {
@@ -46,15 +73,19 @@ const questions = [
     {
         type: "input",
         message: "What's the employee's title?",
-        name: "role"
+        name: "role",
+        choices: [
+            "Engineer",
+            "Intern"
+        ]
 
-    },
-]
+    }
+];
 
 const managerQuestion = [
     {
         type: "input",
-        message: "What's the manager's office phone number?",
+        message: "What's your office phone number?",
         name: "officeNumber"
     }
 ];
@@ -78,13 +109,13 @@ const internQuestion = [
 let start = 
     async function userStart() {
         await Inquirer
-        .prompt(questions)
+        .prompt(userQuestions)
         .then(async function(userData) {
-            let userInfo = {
+            let managerInfo = {
                 "name": userData.name,
                 "id": JSON.parse(userData.id),
                 "email": userData.email,
-                "role": userData.role,
+                "role": "Manager",
                 "officeNumber": "",
                 "github": "",
                 "school": "",
@@ -92,16 +123,37 @@ let start =
 
             }
             if(position = true) {
-                employeeInfo.push(userInfo)
+                employeeInfo.push(managerInfo)
                 newEmp()
             }
         })
-    }
+    }  
 
-let next = 
-    async function userNext() {
+
+
+let input = 
+    async function init() {
         await Inquirer
         .prompt(questions)
+        .then(async function(userData) {
+            let userInfo = {
+                "name": userData.name,
+                "id": JSON.parse(userData.id),
+                "email": userData.email,
+                "role": userData.title,
+                "officeNumber": "",
+                "github": "",
+                "school": ""
+            }
+            employeeInfo.push(userInfo)
+            newEmp()
+        })
+    };
+
+    let next = 
+    async function userNext() {
+        await Inquirer
+        .prompt(userChoices)
         .then(async function(answers) {
             if (answers.userchoice === "Add an employee?") {
                 employeeInfo.length = 0;
@@ -118,7 +170,7 @@ let newEmp =
         const name = employeeInfo[0].name;
         const id = employeeInfo[0].id;
         const email = employeeInfo[0].email;
-        // const role = employeeInfo[0].role;
+        const role = employeeInfo[0].role;
 
         const employee = new Employee(name, id, email, role)
         classDir()
@@ -149,7 +201,7 @@ async function createManager() {
         const name = employeeInfo[0].name;
         const id = employeeInfo[0].id;
         const email = employeeInfo[0].email;
-        // const role = employeeInfo[0].role;
+        const role = employeeInfo[0].role;
         const officeNumber = employeeInfo[0].officeNumber;
 
         const manager = new Manager(name, id, email, officeNumber)
@@ -173,7 +225,7 @@ async function createEngineer() {
     const name = employeeInfo[0].name;
     const id = employeeInfo[0].id;
     const email = employeeInfo[0].email;
-    // const role = employeeInfo[0].role;
+    const role = employeeInfo[0].role;
     const github = employeeInfo[0].github;
 
     const engineer = new Engineer(name, id, email, github)
@@ -195,7 +247,7 @@ async function createIntern() {
     const name = employeeInfo[0].name;
     const id = employeeInfo[0].id;
     const email = employeeInfo[0].email;
-    // const role = employeeInfo[0].role;
+    const role = employeeInfo[0].role;
     const school = employeeInfo[0].school;
 
     const intern = new Intern(name, id, email, school)
@@ -220,6 +272,7 @@ createTeam =
         fs.appendFileSync("./templates/main.html");
     };
 };
+
 
 
 start()
