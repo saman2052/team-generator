@@ -1,4 +1,4 @@
-const Manager = require("./employee");
+const Employee = require("./employee");
 
 class Manager extends Employee {
     constructor(officeNumber, name, id, email) {

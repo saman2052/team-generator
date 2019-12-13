@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 
+
 const templateDirectory = path.resolve(__dirname, "../templates")
 
 const render = employees => {
@@ -61,3 +62,4 @@ const replacePlaceholders = (template, placeholder, value) => {
     const pattern = new RegExp("{{ " + placeholder + " }}", "gm");
     return template.replace(pattern, value);
 };
+

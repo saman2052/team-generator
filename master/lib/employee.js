@@ -1,5 +1,5 @@
 class Employee {
-    constructor(name, id, email) {
+    constructor(name, id, email, role="Employee") {
         this.name = name;
         this.id = id;
         this.email = email;
@@ -23,7 +23,7 @@ class Employee {
 
     getRole() {
         // console.log(`Title: ${this.title}`);
-        return "employee"
+        return "Manager"
     }
 }
 
