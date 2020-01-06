@@ -1,278 +1,139 @@
-const Employee = require("./lib/employee");
-const Engineer = require("./lib/engineer");
-const Intern = require("./lib/intern");
-const Manager = require("./lib/manager");
-const HTMLRenderer = require("./lib/htmlRenderer");
 
-const axios = require("axios");
-const Inquirer = require("inquirer");
-const Jest = require("jest");
-const path = require("path");
+const inquirer = require("inquirer");
 const fs = require("fs");
+const util = require('util');
+const Engineer = require("./lib/Engineer");
+const Intern = require("./lib/Intern");
+const Manager = require("./lib/Manager");
+const readFile = util.promisify(fs.readFile);
+const writeFile = util.promisify(fs.writeFile);
 
-let employeeInfo = [];
-let managerArr = [];
-let engineerArr = [];
-let internArr = [];
+let employees = [];
 
-const userChoices = [
-    {
-        type: "list",
-        message: "Would you like to: ",
-        name: "userChoices",
-        choices: [
-            "Add an employee?",
-            "Create a Team HTML page?"
-        ]
-    }
-] 
 
-const userQuestions = [
-    {
-        type:"input",
-        message: "Welcome, what's your name?",
-        name: "name"
+
+const questions = {
+    role : function() {
+        return {
+            message: "Which employee would you like to add to your team?",
+            type: "list",
+            name: "employee",
+            choices: [
+                "Engineer", 
+                "Intern", 
+                "I don't want to add anymore team members"
+            ]
+        }
     },
-    {
-        type: "input",
-        message: "What's your ID?",
-        name: "id"
-    },
-    {
-        type: "input",
-        message: "What's your email?",
-        name: "email"
-    },
-    {
-        type: "confirm",
-        message: "Are you a manager?",
-        name: "position",
-        choices: [
-            "Yes",
-            "No"
-        ]
-    }
-];
-
-const questions = [
-    {
-        type: "input",
-        message: "What's the employee's name?",
-        name: "name"
-    },
-    {
-        type: "input",
-        message: "What's the employee's ID?",
-        name: "id"
-    },
-    {
-        type: "input",
-        message: "What's the employee's email?",
-        name: "email"
-    },
-    {
-        type: "input",
-        message: "What's the employee's title?",
-        name: "role",
-        choices: [
-            "Engineer",
-            "Intern"
-        ]
-
-    }
-];
-
-const managerQuestion = [
-    {
-        type: "input",
-        message: "What's your office phone number?",
-        name: "officeNumber"
-    }
-];
-
-const engineerQuestion = [
-    {
-        type: "input",
-        message: "What's the engineer's GitHub username?",
-        name: "github"
-    }
-];
-
-const internQuestion = [
-    {
-        type: "input",
-        message: "What's the intern's school?",
-        name: "school"
-    }
-];
-
-let start = 
-    async function userStart() {
-        await Inquirer
-        .prompt(userQuestions)
-        .then(async function(userData) {
-            let managerInfo = {
-                "name": userData.name,
-                "id": JSON.parse(userData.id),
-                "email": userData.email,
-                "role": "Manager",
-                "officeNumber": "",
-                "github": "",
-                "school": "",
-
-
+    information: function(employee, variable, information = variable) {
+        return {
+            message: `What is your ${employee}'s ${information}?`,
+            type: "input",
+            name: variable,
+            validate: function(value){
+                var string = value.match(/^\s*\S+.*/);
+                if (string) {
+                  return true;
+                } else {
+                  return "Please enter the information";
+                }
             }
-            if(position = true) {
-                employeeInfo.push(managerInfo)
-                newEmp()
-            }
-        })
-    };
-
-
-
-let input = 
-    async function init() {
-        await Inquirer
-        .prompt(questions)
-        .then(async function(userData) {
-            let userInfo = {
-                "name": userData.name,
-                "id": JSON.parse(userData.id),
-                "email": userData.email,
-                "role": userData.title,
-                "officeNumber": "",
-                "github": "",
-                "school": ""
-            }
-            employeeInfo.push(userInfo)
-            newEmp()
-        })
-    };
-
-    let next = 
-    async function userNext() {
-        await Inquirer
-        .prompt(userChoices)
-        .then(async function(answers) {
-            if (answers.userchoice === "Add an employee?") {
-                employeeInfo.length = 0;
-                input()
-            }
-            if (answers.userchoice === "Create a Team HTML page?") {
-                createTeam()
-            }
-        })
-    };
-
-let newEmp = 
-    async function employeeProfile() {
-        const name = employeeInfo[0].name;
-        const id = employeeInfo[0].id;
-        const email = employeeInfo[0].email;
-        const role = employeeInfo[0].role;
-
-        const employee = new Employee(name, id, email, role)
-        classDir()
-    };
-
-let classDir = 
-    async function byTitle() {
-        if (employeeInfo[0].role === "manager") {
-            createManager()
         }
-        if (employeeInfo[0].role === "engineer") {
-            createEnginner()
-        }
-        if (employeeInfo[0].role === "intern") {
-            createIntern()
-        }
-    };
-
-async function createManager() {
-    await Inquirer
-    .prompt(managerQuestion)
-    .then(async function(userData) {
-        let managerInfo = {
-            "officeNumber": JSON.parse(userData.officeNumber)
-        }
-        employeeInfo[0].officeNumber = managerInfo.officeNumber;
-
-        const name = employeeInfo[0].name;
-        const id = employeeInfo[0].id;
-        const email = employeeInfo[0].email;
-        const role = employeeInfo[0].role;
-        const officeNumber = employeeInfo[0].officeNumber;
-
-        const manager = new Manager(name, id, email, officeNumber)
-        managerArr.push(manager);
-    })
-
-    next()
-};
-
-async function createEngineer() {
-    await Inquirer
-    .prompt(engineerQuestion)
-    .then(async function(userData) {
-        let engineerInfo = {
-            "github": userData.github
-        }
-        employeeInfo[0].github = engineerInfo.github;
-
-    })
-
-    const name = employeeInfo[0].name;
-    const id = employeeInfo[0].id;
-    const email = employeeInfo[0].email;
-    const role = employeeInfo[0].role;
-    const github = employeeInfo[0].github;
-
-    const engineer = new Engineer(name, id, email, github)
-    engineerArr.push(engineer);
-
-    next()
-};
-
-async function createIntern() {
-    await Inquirer
-    .prompt(internQuestion)
-    .then(async function(userData) {
-        let internInfo = {
-            "school": userData.school
-        }
-        employeeInfo[0].school = internInfo.school;
-    })
-
-    const name = employeeInfo[0].name;
-    const id = employeeInfo[0].id;
-    const email = employeeInfo[0].email;
-    const role = employeeInfo[0].role;
-    const school = employeeInfo[0].school;
-
-    const intern = new Intern(name, id, email, school)
-    internArr.push(intern);
-
-    next()
-};
-
-createTeam =
-    async function teamHTML() {
-        fs.writeFileSync("./templates/main.html");
-
-    for (i = 0; i < managerArr.length; i++) {
-        fs.appendFileSync("./templates/main.html");
-    };
-
-    for (i = 0; i < engineerArr.length; i++) {
-        fs.appendFileSync("./templates/main.html");
-    };
-
-    for (i = 0; i < internArr.length; i++) {
-        fs.appendFileSync("./templates/main.html");
-    };
+    }
 };
 
 
+async function makeTeam(employee) {
+    
+    let { id } = await inquirer.prompt(questions.information(employee, "id"));
+    let { name } = await inquirer.prompt(questions.information(employee, "name"));
+    let { email } = await inquirer.prompt(questions.information(employee, "email"));
 
-start()
+    switch (employee) {
+        
+        case "Manager":
+            let { officenumber } = await inquirer.prompt(questions.information(employee, "officenumber"));
+            employees.push(new Manager(name, id, email, officenumber));
+            break;
+            
+        case "Engineer":
+            let { github } = await inquirer.prompt(questions.information(employee, "github"));
+            employees.push(new Engineer(name, id, email, github));
+            break;
+
+        case "Intern":
+            let { school } = await inquirer.prompt(questions.information(employee, "school"));
+            employees.push(new Intern(name, id, email, school));
+            break;
+    }
+}
+
+
+function getHTMLModule(file) {
+    return readFile(file, "utf8");
+}
+
+
+async function generateHTML() {
+    let Template = {
+        Main: await getHTMLModule("./Templates/main.html"),
+        Manager: await getHTMLModule("./Templates/manager.html"),
+        Engineer: await getHTMLModule("./Templates/engineer.html"),
+        Intern: await getHTMLModule("./Templates/intern.html")
+    }
+
+    let htmlReview = "";
+
+    for (let employee of employees) {
+        let html = Template[employee.constructor.name]
+        .replace(/{id}/, employee.id)
+        .replace(/{name}/, employee.name)
+        .replace(/{email}/, employee.email);
+        switch (employee.constructor.name) {
+            case "Manager":
+                html = html.replace(/{officenumber}/, employee.officenumber);
+                break;
+            case "Engineer":
+                html = html.replace(/{github}/, employee.github);
+                break;
+            case "Intern":
+                html = html.replace(/{school}/, employee.school);
+                break;
+        }
+        htmlReview += html;
+    }
+    let completeHTML = Template["Main"].replace(/{employees}/, htmlReview);
+
+    createHTML(completeHTML);
+}
+
+
+async function createHTML(html) {
+    if (!fs.existsSync("./output")) {
+        fs.mkdirSync("./output");
+    }
+    await writeFile("./output/team.html", html);
+    console.log("HTML has been created to output.");
+    return;
+}
+
+
+async function init() {
+
+    await makeTeam("Manager");
+
+    let employee = "";
+    let exit = "I don't want to add anymore team members";
+
+    while (employee != exit) {
+        let { employee } = await inquirer.prompt(questions.role());
+
+        if (employee === exit) {
+            return generateHTML();
+        }
+
+        await makeTeam(employee);
+    }
+}
+
+init();
