@@ -3,29 +3,23 @@ class Employee {
         this.name = name;
         this.id = id;
         this.email = email;
-        this.role = "Employee";
     }
 
     getName() {
-        // console.log(`Name: ${this.name}`);
-        return this.name
-        
+        return this.name;
     }
 
     getId() {
-        // console.log(`ID: ${this.id}`);
-        return this.id
+        return this.id;
     }
 
     getEmail() {
-        // console.log();
-        return this.email
+        return this.email;
     }
 
     getRole() {
-        // console.log(`Title: ${this.title}`);
-        return this.role
+        return this.contructor.name;
     }
 }
 
-module.exports = Employee
+module.exports = Employee;
