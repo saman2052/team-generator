@@ -20,3 +20,7 @@ Axios module
 Inquirer module
 Jest module
 
+![Demo](https://github.com/Dsorthep/team-generator/blob/master/develop/assets/team-generator.gif "Demo GIF")
+
+![Screenshot-1](develop/assets/screenshot-1.png "Top of Page")
+![Screenshot-2](develop/assets/screenshot-2.png "Bottom of Page")
