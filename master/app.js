@@ -1,139 +1,380 @@
+// CONTRUCTORS
+const Employee = require('./lib/employee');
+const Manager = require('./lib/manager');
+const Engineer = require('./lib/engineer');
+const Intern = require('./lib/intern');
+// DEPENDENCIES
+const axios = require('axios');
+const Inquirer = require("inquirer");
+const Jest = require('jest');
+const path = require('path');
+const fs = require('fs');
 
-const inquirer = require("inquirer");
-const fs = require("fs");
-const util = require('util');
-const Engineer = require("./lib/Engineer");
-const Intern = require("./lib/Intern");
-const Manager = require("./lib/Manager");
-const readFile = util.promisify(fs.readFile);
-const writeFile = util.promisify(fs.writeFile);
-
-let employees = [];
+let managerArr = [];
+let engineerArr = [];
+let internArr = [];
+let employeeInfo = [];
 
 
 
-const questions = {
-    role : function() {
-        return {
-            message: "Which employee would you like to add to your team?",
-            type: "list",
-            name: "employee",
-            choices: [
-                "Engineer", 
-                "Intern", 
-                "I don't want to add anymore team members"
-            ]
-        }
-    },
-    information: function(employee, variable, information = variable) {
-        return {
-            message: `What is your ${employee}'s ${information}?`,
-            type: "input",
-            name: variable,
-            validate: function(value){
-                var string = value.match(/^\s*\S+.*/);
-                if (string) {
-                  return true;
-                } else {
-                  return "Please enter the information";
-                }
-            }
-        }
+// QUESTIONS
+const adminChoices = [
+    {
+        type: "list",
+        message: "Would you like to:",
+        name: "adminchoice",
+        choices: [
+            'Add an employee to the team?',
+            'Create the team HTML page?'
+        ]
     }
+]
+
+const adminQuestions = [
+    {
+        type: "input",
+        message: "Hello manager, what is your name?",
+        name: "name"
+    },
+    {
+        type: "input",
+        message: "What is your id?",
+        name: "id"
+    },
+    {
+        type: "input",
+        message: "What is your email?",
+        name: "email"
+    },
+    {
+        type: "confirm",
+        message: "Are you a manager?",
+        name: "position",
+        choices: [
+            'Yes',
+            'No'
+        ]
+    }
+];
+
+const questions = [
+    {
+        type: "input",
+        message: "What is the employee's name?",
+        name: "name"
+    },
+    {
+        type: "input",
+        message: "What is the employee's id?",
+        name: "id"
+    },
+    {
+        type: "input",
+        message: "What is the employee's email?",
+        name: "email"
+    },
+    {
+        type: "list",
+        message: "What is the employee's title?",
+        name: "title",
+        choices: [
+            'engineer',
+            'intern'
+        ]
+    }
+];
+
+const managerQuestion = [
+    {
+        type: "input",
+        message: "What is your office number?",
+        name: "officeNumber"
+    }
+
+];
+
+const engineerQuestion = [
+    {
+        type: "input",
+        message: "What is the employee's GitHUb username?",
+        name: "gitname"
+    }
+
+];
+
+const internQuestion = [
+    {
+        type: "input",
+        message: "What school did the employee go to?",
+        name: "school"
+    }
+
+];
+
+let start =
+    async function adminStart() {
+
+        await Inquirer
+            .prompt(adminQuestions)
+
+            .then(async function (userData) {
+                let managerInfo = {
+                    'name': userData.name,
+                    'id': JSON.parse(userData.id),
+                    'email': userData.email,
+                    'role': 'employee', // DEFAULT
+                    'title': 'manager',
+                    'officeNumber': '',
+                    'gitname': '',
+                    'github': '',
+                    'school': ''
+
+                }
+                if (position = true) {
+                    employeeInfo.push(managerInfo)
+                    newemp()
+                }
+            })
+    }
+
+let next =
+    async function adminNext() {
+        await Inquirer
+            .prompt(adminChoices)
+            .then(async function (answers) {
+                if (answers.adminchoice === 'Add an employee to the team?') {
+                    employeeInfo.length = 0;
+                    input()
+                }
+                if (answers.adminchoice === 'Create the team HTML page?') {
+                    createteam()
+                }
+            })
+    };
+
+let input =
+    async function init() {
+        await Inquirer
+            .prompt(questions)
+
+            .then(async function (userData) {
+                let userInfo = {
+                    'name': userData.name,
+                    'id': JSON.parse(userData.id),
+                    'email': userData.email,
+                    'role': 'employee', // DEFAULT
+                    'title': userData.title,
+                    'officeNumber': '',
+                    'gitname': '',
+                    'github': '',
+                    'school': ''
+                }
+                employeeInfo.push(userInfo)
+                newemp()
+            })
+    };
+
+let newemp =
+    async function employeeprofile() {
+        const name = employeeInfo[0].name;
+        const id = employeeInfo[0].id;
+        const email = employeeInfo[0].email;
+        const role = employeeInfo[0].role;
+
+        const employee = new Employee(name, id, email, role)
+        classdir()
+    };
+
+let classdir =
+    async function bytitle() {
+
+        if (employeeInfo[0].title === "manager") {
+            buildManager()
+        }
+        if (employeeInfo[0].title === "engineer") {
+            buildEngineer()
+        }
+        if (employeeInfo[0].title === "intern") {
+            buildIntern()
+        }
+    };
+
+async function buildManager() {
+
+    await Inquirer
+        .prompt(managerQuestion)
+
+        .then(async function (userData) {
+            let managerAns = {
+                'officeNumber': JSON.parse(userData.officeNumber)
+            }
+            employeeInfo[0].officeNumber = managerAns.officeNumber;
+
+            const name = employeeInfo[0].name;
+            const id = employeeInfo[0].id;
+            const email = employeeInfo[0].email;
+            const role = employeeInfo[0].role;
+            const officeNumber = employeeInfo[0].officeNumber;
+        
+            const manager = new Manager(name, id, email, officeNumber)
+            managerArr.push(manager);
+
+        })
+
+    next()
 };
 
+async function buildEngineer() {
+    await Inquirer
+        .prompt(engineerQuestion)
 
-async function makeTeam(employee) {
-    
-    let { id } = await inquirer.prompt(questions.information(employee, "id"));
-    let { name } = await inquirer.prompt(questions.information(employee, "name"));
-    let { email } = await inquirer.prompt(questions.information(employee, "email"));
+        .then(async function (userData) {
+            let engineerInfo = {
+                'gitname': userData.gitname
+            }
+            employeeInfo[0].gitname = engineerInfo.gitname;
+        })
+        .then(async function() {
 
-    switch (employee) {
+            const gitname = employeeInfo[0].gitname;
+            let queryURL = 'https://api.github.com/users/' + gitname;
+            axios
+                .get(queryURL).then(async function (response) {
+                    const engineerInfo = {
+                        "github": response.data.login,
+                    }
         
-        case "Manager":
-            let { officenumber } = await inquirer.prompt(questions.information(employee, "officenumber"));
-            employees.push(new Manager(name, id, email, officenumber));
-            break;
-            
-        case "Engineer":
-            let { github } = await inquirer.prompt(questions.information(employee, "github"));
-            employees.push(new Engineer(name, id, email, github));
-            break;
+                    employeeInfo[0].github = engineerInfo.github;
+                    
+                })
+        })
+                        setTimeout(function(){
+                        const name = employeeInfo[0].name;
+                        const id = employeeInfo[0].id;
+                        const email = employeeInfo[0].email;
+                        const role = employeeInfo[0].role;
+                        const gitname = employeeInfo[0].gitname;
+                        const github = employeeInfo[0].github;
+                    
+                        const engineer = new Engineer(name, id, email, gitname, github)
+             
+                        engineerArr.push(engineer)
+                        }, 2000);
+                    
+next()
+};
 
-        case "Intern":
-            let { school } = await inquirer.prompt(questions.information(employee, "school"));
-            employees.push(new Intern(name, id, email, school));
-            break;
-    }
-}
+async function buildIntern() {
+    await Inquirer
+        .prompt(internQuestion)
+
+        .then(async function (userData) {
+            let internInfo = {
+                'school': userData.school
+            }
+            employeeInfo[0].school = internInfo.school;
+        })
+        const name = employeeInfo[0].name;
+        const id = employeeInfo[0].id;
+        const email = employeeInfo[0].email;
+        const role = employeeInfo[0].role;
+        const school = employeeInfo[0].school;
+
+    const intern = new Intern(name, id, email, school);
+    internArr.push(intern)
+    next()
+};
+
+createteam =
+    async function teamHTML() {
 
 
-function getHTMLModule(file) {
-    return readFile(file, "utf8");
-}
+        fs.writeFileSync('./output/teampage.html',
+            '<DOCTYPE! HTML>' +
+            '<html>' +
+            '<head>' +
+            '<meta charset="UTF-8">' +
+            '<link rel="stylesheet" type="text/css" href="style.css">' +
+            '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>' +
+            '<meta name="viewport" content="width=device-width, initial-scale=1.0"/> ' +
+            '<meta http-equiv="X-UA-Compatible" content="ie=edge" />' +
+            '</head>' +
+            '<body>' +
+            '<header>' +
+            '<h1>' + 'Company Team Page' + '</h1>' +
+            '</header>' +
+            '<container>' +
+            '<div class="row">' +
+            '<div class="col-sm-10">'
+        );
 
+        fs.appendFileSync('./output/teampage.html',
+            '<div id="manager">' +
+            '<div class="card">' +
+            '<div class="card-header bg-info">' + managerArr[0].name + '</div>' +
+                '<div class="card-body">' +
+                    '<div class=content>' +
 
-async function generateHTML() {
-    let Template = {
-        Main: await getHTMLModule("./Templates/main.html"),
-        Manager: await getHTMLModule("./Templates/manager.html"),
-        Engineer: await getHTMLModule("./Templates/engineer.html"),
-        Intern: await getHTMLModule("./Templates/intern.html")
-    }
+                    '<p>' + "ID: " + managerArr[0].id + '</p>' + '<hr>' +
+                    '<p>' + "Email: " + managerArr[0].email + '</p>' + '<hr>' +
+                    '<p>' + "Office Number: " + managerArr[0].officeNumber + '</p>' + '<hr>' +
 
-    let htmlReview = "";
+                    '</div>' +
+                '</div>' +
+            '<div class="card-footer bg-info">' + "Manager" + '</div>' +
+            '</div>' +
+            '</div>'
+        );
 
-    for (let employee of employees) {
-        let html = Template[employee.constructor.name]
-        .replace(/{id}/, employee.id)
-        .replace(/{name}/, employee.name)
-        .replace(/{email}/, employee.email);
-        switch (employee.constructor.name) {
-            case "Manager":
-                html = html.replace(/{officenumber}/, employee.officenumber);
-                break;
-            case "Engineer":
-                html = html.replace(/{github}/, employee.github);
-                break;
-            case "Intern":
-                html = html.replace(/{school}/, employee.school);
-                break;
+        for (i = 0; i < engineerArr.length; i++) {
+            fs.appendFileSync('./output/teampage.html',
+                '<div id="engineer">' +
+                '<div class="card">' +
+                '<div class="card-header bg-primary">' + engineerArr[i].name + '</div>' +
+                '<div class="card-body">' +
+                '<div class=content>' +
+
+                '<p>' + "ID: " + engineerArr[i].id + '</p>' + '<hr>' +
+                '<p>' + "Email " + engineerArr[i].email + '</p>' + '<hr>' +
+                '<p>' + "GitHub username: " + engineerArr[i].gitname + '</p>' + '<hr>' +
+
+                '</div>' +
+                '</div>' +
+                '<div class="card-footer bg-primary">' + 'Engineer' + '</div>' +
+                '</div>' +
+                '</div>'
+            );
         }
-        htmlReview += html;
-    }
-    let completeHTML = Template["Main"].replace(/{employees}/, htmlReview);
 
-    createHTML(completeHTML);
-}
+        for (i = 0; i < internArr.length; i++) {
+            fs.appendFileSync('./output/teampage.html',
+                '<div id="intern">' +
+                '<div class="card">' +
+                '<div class="card-header bg-success">' + internArr[i].name + '</div>' +
+                '<div class="card-body">' +
+                '<div class=content>' +
 
+                '<p>' + "ID: " + internArr[i].id + '</p>' + '<hr>' +
+                '<p>' + "Email: " + internArr[i].email + '</p>' + '<hr>' +
+                '<p>' + "School: " + internArr[i].school + '</p>' + '<hr>' +
 
-async function createHTML(html) {
-    if (!fs.existsSync("./output")) {
-        fs.mkdirSync("./output");
-    }
-    await writeFile("./output/team.html", html);
-    console.log("HTML has been created to output.");
-    return;
-}
-
-
-async function init() {
-
-    await makeTeam("Manager");
-
-    let employee = "";
-    let exit = "I don't want to add anymore team members";
-
-    while (employee != exit) {
-        let { employee } = await inquirer.prompt(questions.role());
-
-        if (employee === exit) {
-            return generateHTML();
+                '</div>' +
+                '</div>' +
+                '<div class="card-footer bg-success">' + 'Intern' + '</div>' +
+                '</div>' +
+                '</div>'
+            );
         }
 
-        await makeTeam(employee);
-    }
-}
+        fs.appendFileSync('./output/teampage.html', 
+            '</div>' +
+            '</div>' +
+            '</container>' +
+            '</body>' +
+            '</html>'
+        );
 
-init();
+        console.log('Your html file for the team page is in the output folder')
+    }
+
+start()
