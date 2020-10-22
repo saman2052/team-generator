@@ -1,26 +1,12 @@
-# team-generator
-Homework #10
 
-Welcome to the Team Profile Generator. 
 
-https://dsorthep.github.io/team-generator/
-
-Here you will be able to create your own Team Page with employee data retrieved from a CLI. 
+Here is where you can create your own Team Page with the employee data retrieved from a CLI. 
 
 "As a manager
-I want to generate a webpage that displays my team's basic info
+I wanted to generate a strong webpage that displays my team's basic info
 so that I have quick access to emails and GitHub profiles"
 
-You'll be prompted with questions including an employee name, ID, email, and title. Each title has it's own specific questions as well. After questions have been answered you'll be prompted to create your own html page with your team's data displayed.
+You will be prompted with many questions including an employee name, ID, email, and title. Each title has it's own specific questions as well. After the questions have been answered you will be prompted to create your own html page with your team's data showed.
 
-TECHNOLOGIES USED:
-Bootstrap
-Node.js
-Axios module
-Inquirer module
-Jest module
 
 ![Demo](https://github.com/Dsorthep/team-generator/blob/master/develop/assets/team-generator.gif "Demo GIF")
-
-![Screenshot-1](develop/assets/screenshot-1.png "Top of Page")
-![Screenshot-2](develop/assets/screenshot-2.png "Bottom of Page")
